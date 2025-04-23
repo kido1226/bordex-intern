@@ -34,25 +34,18 @@ ghc-options:
 - -Wredundant-constraints
 
 library:
-  source-dirs: session3
-  dependencies:
-  - hasktorch
-  - hasktorch-tools
+  source-dirs: src
 
 executables:
   haskell-exe:
-    main:  Main.hs
-    source-dirs:
-    - app
-    - session3
+    main:                Main.hs
+    source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - hasktorch
-    - hasktorch-tools
-    - haskell
+    - torch
 
 tests:
   haskell-test:
@@ -63,5 +56,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - hasktorch
-    - hasktorch-tools
+    - torch

@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import LinearRegression (runLinearRegression)
 
 main :: IO ()
-main = someFunc
+main = runLinearRegression
