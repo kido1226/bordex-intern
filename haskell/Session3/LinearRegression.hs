@@ -50,7 +50,7 @@ calculateNewA ::
 calculateNewA [a, b] =
   let estimatedY = linear (a, b) xs
       diffs = F.sub estimatedY ys
-      grad = F.div (F.sumAll (F.mul xs diffs)) m
+      grad = F.div (F.sumAll (F.mul xs diffs)) (m * 0.5)
    in F.sub a (F.mul grad rate)
 
 calculateNewB ::
@@ -59,7 +59,7 @@ calculateNewB ::
 calculateNewB [a, b] =
   let estimatedY = linear (a, b) xs
       diffs = F.sub estimatedY ys
-      grad = F.div (F.sumAll diffs) m
+      grad = F.div (F.sumAll diffs) (m * 0.5)
    in F.sub b (F.mul grad rate)
 
 train :: Int -> Tensor -> Tensor -> IO (Tensor, Tensor)
