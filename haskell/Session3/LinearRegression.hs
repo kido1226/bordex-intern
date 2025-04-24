@@ -42,7 +42,7 @@ cost ::
 cost z z' =
   let diffs = F.sub z' z
       squared = F.pow (2.0 :: Float) diffs
-   in F.div (F.sumAll squared) (m * 2.0)
+   in F.div (F.sumAll squared) m
 
 calculateNewA ::
   [Tensor] ->
@@ -79,8 +79,8 @@ train n a b = do
 runLinearRegression =
   do
     -- Below are pseudo code
-    let sampleA = asTensor (1.0 :: Float)
-    let sampleB = asTensor (1.0 :: Float)
+    let sampleA = asTensor (0.0 :: Float)
+    let sampleB = asTensor (5.0 :: Float)
 
     -- Iterate through the provided xs and ys data.
     trainedData <- train epoch sampleA sampleB
