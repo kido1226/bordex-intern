@@ -33,7 +33,7 @@ linear (slope, intercept) input = F.add (F.mul slope input) intercept
 -- slope and input are scalar
 
 cost ::
-  -- | grand truth: 1 × 10
+  -- | grund truth: 1 × 10
   Tensor ->
   -- | estimated values: 1 × 10
   Tensor ->
@@ -44,31 +44,54 @@ cost z z' =
       squared = F.pow (2.0 :: Float) diffs
    in F.div (F.sumAll squared) m
 
+-- calculateNewA ::
+--   [Tensor] ->
+--   Tensor
+-- calculateNewA [a, b] =
+--   let estimatedY = linear (a, b) xs
+--       diffs = F.sub estimatedY ys
+--       grad = F.div (F.sumAll (F.mul xs diffs)) (m * 0.5)
+--    in F.sub a (F.mul grad rate)
+
+-- calculateNewB ::
+--   [Tensor] ->
+--   Tensor
+-- calculateNewB [a, b] =
+--   let estimatedY = linear (a, b) xs
+--       diffs = F.sub estimatedY ys
+--       grad = F.div (F.sumAll diffs) (m * 0.5)
+--    in F.sub b (F.mul grad rate)
+
 calculateNewA ::
   [Tensor] ->
-  Tensor
-calculateNewA [a, b] =
+  IO Tensor
+calculateNewA [a, b] = do
   let estimatedY = linear (a, b) xs
-      diffs = F.sub estimatedY ys
-      grad = F.div (F.sumAll (F.mul xs diffs)) (m * 0.5)
-   in F.sub a (F.mul grad rate)
+  let diffs = F.sub estimatedY ys
+  let grad = F.div (F.sumAll (F.mul xs diffs)) (m * 0.5)
+  let a' = F.sub a (F.mul grad rate)
+  putStrLn $ "estimatedY = " ++ show (asValue estimatedY :: [Float]) ++ "\n diffs =  " ++ show (asValue diffs :: [Float]) ++ "\n grad =  " ++ show (asValue grad :: Float) ++ "\n a' =  " ++ show (asValue a' :: Float)
+  return a'
 
 calculateNewB ::
   [Tensor] ->
-  Tensor
-calculateNewB [a, b] =
+  IO Tensor
+calculateNewB [a, b] = do
   let estimatedY = linear (a, b) xs
-      diffs = F.sub estimatedY ys
-      grad = F.div (F.sumAll diffs) (m * 0.5)
-   in F.sub b (F.mul grad rate)
+  let diffs = F.sub estimatedY ys
+  let grad = F.div (F.sumAll diffs) (m * 0.5)
+  let b' = F.sub b (F.mul grad rate)
+  putStrLn $ "estimatedY = " ++ show (asValue estimatedY :: [Float]) ++ "\n diffs =  " ++ show (asValue diffs :: [Float]) ++ "\n grad =  " ++ show (asValue grad :: Float) ++ "\n b' =  " ++ show (asValue b' :: Float)
+  return b'
 
 train :: Int -> Tensor -> Tensor -> IO (Tensor, Tensor)
 train 0 a b = return (a, b)
 train n a b = do
-  let a' = calculateNewA [a, b]
-  let b' = calculateNewB [a, b]
+  a' <- calculateNewA [a, b]
+  b' <- calculateNewB [a, b]
   let cost' = cost ys (linear (a', b') xs)
-  putStrLn $ "Epoch " ++ show (epoch - n + 1) ++ ": cost = " ++ show (asValue cost' :: Float)
+  putStrLn $ "Epoch " ++ show (epoch - n + 1) ++ ": cost = " ++ show (asValue cost' :: Float) ++ ": a = " ++ show (asValue a' :: Float) ++ ": b = " ++ show (asValue b' :: Float)
+  putStrLn "************************************************************"
   train (n - 1) a' b'
 
 -- if (asValue (cost ys (linear (a', b') xs)) :: Float) < 0.001
@@ -79,14 +102,19 @@ train n a b = do
 runLinearRegression =
   do
     -- Below are pseudo code
-    let sampleA = asTensor (0.0 :: Float)
+    let sampleA = asTensor (5.0 :: Float)
     let sampleB = asTensor (5.0 :: Float)
+
+    calcA <- calculateNewA [sampleA, sampleB]
+    calcB <- calculateNewB [sampleA, sampleB]
+    print calcA
+    print calcB
 
     -- Iterate through the provided xs and ys data.
     trainedData <- train epoch sampleA sampleB
     print trainedData
 
-    -- For each pair, convert x to a tensor, calculate the estimatedY using your linear function with the provided sampleA and sampleB, and print both the correct y and the estimatedY.
+    -- -- For each pair, convert x to a tensor, calculate the estimatedY using your linear function with the provided sampleA and sampleB, and print both the correct y and the estimatedY.
 
     let estimatedY = linear trainedData xs
 

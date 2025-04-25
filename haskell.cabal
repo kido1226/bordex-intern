@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      GraduateAdmissionLinear
       LinearRegression
   other-modules:
       Paths_haskell
@@ -42,6 +43,7 @@ library
 executable haskell-exe
   main-is: Main.hs
   other-modules:
+      GraduateAdmissionLinear
       LinearRegression
       Paths_haskell
   autogen-modules:
